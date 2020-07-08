@@ -814,47 +814,8 @@ static int16_t udev_lightgun_aiming_state(udev_input_t *udev, unsigned port, uns
 	//This existing code only works on X11, if you follow these methods through they state this.
 	//So added an X11 if block and provided an alternative that does work with absolute mouse
 	//device in non-X11.
-	#ifdef HAVE_X11
-   struct video_viewport vp;
-   int16_t res_x               = 0;
-   int16_t res_y               = 0;
-   int16_t res_screen_x        = 0;
-   int16_t res_screen_y        = 0;
-
-   udev_input_mouse_t *mouse = udev_get_mouse(udev, port);
-
-   vp.x                        = 0;
-   vp.y                        = 0;
-   vp.width                    = 0;
-   vp.height                   = 0;
-   vp.full_width               = 0;
-   vp.full_height              = 0;
-
-   if (!mouse)
-      return 0;
-
-	//udev->pointer_x and y is only set in X11
-   if (!(video_driver_translate_coord_viewport_wrap(&vp, udev->pointer_x, udev->pointer_y,
-         &res_x, &res_y, &res_screen_x, &res_screen_y)))
-      return 0;
-
-   inside = (res_x >= -edge_detect) && (res_y >= -edge_detect) && (res_x <= edge_detect) && (res_y <= edge_detect);
-
-   switch ( id )
-   {
-   case RETRO_DEVICE_ID_LIGHTGUN_SCREEN_X:
-      return inside ? res_x : 0;
-   case RETRO_DEVICE_ID_LIGHTGUN_SCREEN_Y:
-      return inside ? res_y : 0;
-   case RETRO_DEVICE_ID_LIGHTGUN_IS_OFFSCREEN:
-      return !inside;
-   default:
-      break;
-   }
-
-   return 0;
-   
-   #else //non X11
+	
+   //non X11
    //use similar code to touchscreen to get abs mouse which works on non X11
    udev_input_mouse_t *mouse = udev_get_mouse(udev, port);
 
@@ -879,7 +840,7 @@ static int16_t udev_lightgun_aiming_state(udev_input_t *udev, unsigned port, uns
    }
 
    return 0;
-   #endif
+   
 }
 static int16_t udev_mouse_state(udev_input_t *udev,
       unsigned port, unsigned id, bool screen)
